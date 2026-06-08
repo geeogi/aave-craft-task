@@ -1,3 +1,10 @@
 - Can we track "exited users" without summing all of their events?
 - Users can exit a V3 position by transferring a/v tokens
 
+
+# Caveats
+
+Computing the current balances of all V3 users requires the full list of
+aToken addresses. For simplicity I have worked with a focussed list of the top
+reserves.
+

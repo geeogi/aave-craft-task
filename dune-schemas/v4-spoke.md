@@ -96,4 +96,3 @@ schema:
 | assetId | uint256 |
 | hub | varbinary |
 | reserveId | uint256 |
-
