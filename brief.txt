@@ -1,0 +1,61 @@
+Congrats on making it to the craft stage of the process!
+
+As discussed, the next stage in the process is the take-home task. The take-home task helps us assess your technical skills, but it's also a good opportunity for you to showcase how you think.
+
+Task Instructions:
+
+Aave Take Home Test - Aave V3 & V4 User Analytics Dashboard
+
+Your goal is to build a focused Dune dashboard that explores and compares user activity across Aave V3 and V4.
+
+The dashboard should combine on-chain data from both Aave V3 and V4 to surface product insights about who Aave's users are, how they behave, and - importantly - what kinds of user profiles are migrating from V3 over to V4.
+
+Important: The emphasis is firmly on product analytics and insight, not on reproducing data that can already be pulled elsewhere.
+
+You will build the dashboard on Dune (as close to decision-ready as reasonably possible), it would be worth keeping the following in mind:
+
+product-minded rather than just raw data clear and well-structured SQL thoughtful, decision-useful metrics with clearly defined terms (e.g. what counts as an "active" or "retained" user) clear in both its data modeling and more importantly dashboard design and documentation robust around correctness for query logic and metric definitions clean and well-structured queries annotations and commentary where relevant some degree of sanity-checking and validation of the numbers some degree of in-dashboard documentation
+
+Functional Requirements:
+
+We care more about sound analysis and genuine insight than the number of charts. At a minimum, we'd like the dashboard to explore:
+
+User backgrounds - Who are they?
+Build a picture of who Aave's users actually are across V3 and V4 - for example wallet age/history, size cohorts (whales vs. retail), assets supplied/borrowed, whether they are new to Aave or existing users, and any other dimensions you think are meaningful for understanding the user base.
+
+User retention
+Show how well Aave retains users over time (e.g. cohort-based retention), and how this compares between V3 and V4.
+
+Dollar retention
+Beyond user counts, show retention in dollar/value terms — how much deposited or borrowed value is retained over time, and how that shifts between versions.
+
+V3 to V4 migration
+Characterise which user profiles are migrating from V3 to V4, how much value is moving, and how migrated users differ from those who stay on V3.
+
+Interesting correlations / your own insight
+We'd love to see at least one analysis driven by your own curiosity - an interesting correlation, segment, or behaviour you think tells a story about the user base.
+
+Technical Requirements
+
+Stack you should use:
+
+Dune Analytics
+SQL (Dune's query engine)
+Aave V3 and V4 on-chain data (decoded contract tables and/or curated/abstraction tables as appropriate)
+Use whichever tables, abstractions, and chart types you think are appropriate. Be prepared to explain your choices.
+Deliverables:
+
+Please share two things so we can evaluate your work end-to-end:
+
+A Dune dashboard - made public, with the link shared with us
+A GitHub repository - please create a repository and invite @aavecraft, so we can inspect how you delivered the data (your SQL queries, any scripts, and supporting code)
+Between them, the deliverables should include:
+
+the dashboard itself, with clear, well-labelled visualisations
+the underlying queries, viewable and forkable on Dune and committed to the repository
+a short README explaining:
+approach and how you structured the analysis
+assumptions made
+tradeoffs or unfinished work
+what you would improve next with more time
+We should be able to view the dashboard, inspect the underlying queries, and clone the repository. Please make sure the dashboard and its queries are public (or shared with us) so we can explore them.
