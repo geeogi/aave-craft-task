@@ -1,5 +1,6 @@
 -- V4 users on Ethereum Main Spoke with a currently non-zero supplied position.
 -- Positions are tracked per `user, reserveId` using share balances.
+-- https://dune.com/queries/2332427
 
 WITH user_events AS (
     SELECT
