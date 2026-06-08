@@ -1,56 +1,37 @@
 -- User balances in USD across all V4 spokes.
--- https://dune.com/queries/7676585
+-- Replace <v4_user_balances_weekly_query_id> with the saved Dune query id for v4-user-balances-weekly.sql.
 
-WITH reserve_asset_map AS (
+WITH weekly_balances AS (
     SELECT
         hub,
+        week,
+        user,
         spoke,
         reserveId,
-        assetId,
-        decimals,
         address,
         symbol,
-        price,
-        amount_per_share
-    FROM query_7676557
+        current_supplied_shares_raw,
+        amount_per_share,
+        current_supplied_amount,
+        asset_price_usd,
+        current_position_usd
+    FROM query_<v4_user_balances_weekly_query_id>
 ),
-user_shares AS (
+latest_week AS (
     SELECT
-        user,
-        spoke,
-        reserveId,
-        CASE
-            WHEN event_type = 'supply' THEN shares_raw
-            WHEN event_type = 'withdraw' THEN -shares_raw
-            WHEN event_type = 'liquidation' THEN -shares_raw
-        END AS share_delta_raw
-    FROM query_7677938
-    WHERE event_type IN ('supply', 'withdraw', 'liquidation')
-),
-net_supplied_shares AS (
-    SELECT
-        user,
-        spoke,
-        reserveId,
-        SUM(share_delta_raw) AS current_supplied_shares_raw
-    FROM user_shares
-    GROUP BY
-        user,
-        spoke,
-        reserveId
-    HAVING SUM(share_delta_raw) > 0
+        MAX(week) AS week
+    FROM weekly_balances
 )
 
 SELECT
-    net_supplied_shares.user,
-    reserve_asset_map.hub,
-    net_supplied_shares.spoke,
-    reserve_asset_map.symbol,
-    net_supplied_shares.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) AS current_supplied_amount,
-    net_supplied_shares.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) * reserve_asset_map.price AS current_position_usd
-FROM net_supplied_shares
-INNER JOIN reserve_asset_map
-    ON net_supplied_shares.spoke = reserve_asset_map.spoke
-   AND net_supplied_shares.reserveId = reserve_asset_map.reserveId
+    weekly_balances.user,
+    weekly_balances.hub,
+    weekly_balances.spoke,
+    weekly_balances.symbol,
+    weekly_balances.current_supplied_amount,
+    weekly_balances.current_position_usd
+FROM weekly_balances
+INNER JOIN latest_week
+    ON weekly_balances.week = latest_week.week
 ORDER BY
     current_position_usd DESC NULLS LAST
