@@ -28,7 +28,7 @@ latest_prices AS (
 SELECT
     'ethereum_mainspoke' AS spoke,
     reserves.reserveId,
-    reserves.assetId AS asset,
+    reserves.assetId,
     assets.decimals,
     assets.underlying AS address,
     latest_prices.symbol,
