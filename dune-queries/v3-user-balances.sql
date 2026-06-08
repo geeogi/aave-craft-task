@@ -11,14 +11,6 @@ WITH weekly_asset_reference AS (
         liquidityIndex
     FROM query_7678464
 ),
-selected_atokens AS (
-    SELECT DISTINCT
-        asset,
-        reserve,
-        a_token,
-        decimals
-    FROM weekly_asset_reference
-),
 ranked_liquidity_index AS (
     SELECT
         asset,
@@ -42,46 +34,29 @@ latest_liquidity_index AS (
     FROM ranked_liquidity_index
     WHERE liquidity_index_rank = 1
 ),
-user_transfers AS (
+weekly_user_transfers AS (
     SELECT
-        selected_atokens.asset,
-        selected_atokens.reserve,
-        selected_atokens.a_token,
-        selected_atokens.decimals,
-        date_trunc('week', evt_block_time) AS week,
-        "to" AS user,
-        value AS amount_delta_raw
-    FROM erc20_ethereum.evt_Transfer
-    INNER JOIN selected_atokens
-        ON erc20_ethereum.evt_Transfer.contract_address = selected_atokens.a_token
-
-    UNION ALL
-
-    SELECT
-        selected_atokens.asset,
-        selected_atokens.reserve,
-        selected_atokens.a_token,
-        selected_atokens.decimals,
-        date_trunc('week', evt_block_time) AS week,
-        "from" AS user,
-        -value AS amount_delta_raw
-    FROM erc20_ethereum.evt_Transfer
-    INNER JOIN selected_atokens
-        ON erc20_ethereum.evt_Transfer.contract_address = selected_atokens.a_token
+        asset,
+        reserve,
+        a_token,
+        decimals,
+        week,
+        user,
+        weekly_amount_delta_raw
+    FROM query_7678569
 ),
 user_scaled_transfers AS (
     SELECT
-        user_transfers.asset,
-        user_transfers.reserve,
-        user_transfers.a_token,
-        user_transfers.decimals,
-        user_transfers.user,
-        user_transfers.amount_delta_raw * 1e27 / weekly_asset_reference.liquidityIndex AS scaled_amount_delta_raw
-    FROM user_transfers
+        weekly_user_transfers.asset,
+        weekly_user_transfers.reserve,
+        weekly_user_transfers.a_token,
+        weekly_user_transfers.decimals,
+        weekly_user_transfers.user,
+        weekly_user_transfers.weekly_amount_delta_raw * 1e27 / weekly_asset_reference.liquidityIndex AS scaled_amount_delta_raw
+    FROM weekly_user_transfers
     INNER JOIN weekly_asset_reference
-        ON user_transfers.reserve = weekly_asset_reference.reserve
-       AND user_transfers.week = weekly_asset_reference.week
-    WHERE user_transfers.user != 0x0000000000000000000000000000000000000000
+        ON weekly_user_transfers.reserve = weekly_asset_reference.reserve
+       AND weekly_user_transfers.week = weekly_asset_reference.week
 ),
 current_scaled_balances AS (
     SELECT
