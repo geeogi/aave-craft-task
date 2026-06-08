@@ -1,5 +1,2 @@
 - Can we track "exited users" without summing all of their events?
 
-Things to ignore for now:
-
-shares -> amount is missing

@@ -27,7 +27,6 @@ SELECT
     reserve_asset_map.hub,
     net_supplied_shares.spoke,
     reserve_asset_map.symbol,
-    reserve_asset_map.amount_per_share,
     net_supplied_shares.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) AS current_supplied_amount,
     net_supplied_shares.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) * reserve_asset_map.price AS current_position_usd
 FROM net_supplied_shares
