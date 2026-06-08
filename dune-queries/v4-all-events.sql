@@ -1,5 +1,6 @@
 -- All core user events across all Aave V4 Ethereum spokes.
 -- Single source of truth for spoke-level event unions used by downstream V4 queries.
+-- https://dune.com/queries/7677938
 
 WITH all_events AS (
     SELECT
@@ -38,6 +39,19 @@ WITH all_events AS (
         drawnAmount AS amount_raw,
         drawnShares AS shares_raw
     FROM aave_v4_ethereum.mainspoke_evt_borrow
+
+    UNION ALL
+
+    SELECT
+        'MainSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.mainspoke_evt_repay
 
     UNION ALL
 
@@ -95,6 +109,19 @@ WITH all_events AS (
 
     SELECT
         'BluechipSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.bluechipspoke_evt_repay
+
+    UNION ALL
+
+    SELECT
+        'BluechipSpoke' AS spoke,
         'liquidation' AS event_type,
         user,
         collateralReserveId AS reserveId,
@@ -142,6 +169,19 @@ WITH all_events AS (
         drawnAmount AS amount_raw,
         drawnShares AS shares_raw
     FROM aave_v4_ethereum.ethenacorrelatedspoke_evt_borrow
+
+    UNION ALL
+
+    SELECT
+        'EthenaCorrelatedSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.ethenacorrelatedspoke_evt_repay
 
     UNION ALL
 
@@ -199,6 +239,19 @@ WITH all_events AS (
 
     SELECT
         'EthenaEcosystemSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.ethenaecosystemspoke_evt_repay
+
+    UNION ALL
+
+    SELECT
+        'EthenaEcosystemSpoke' AS spoke,
         'liquidation' AS event_type,
         user,
         collateralReserveId AS reserveId,
@@ -246,6 +299,19 @@ WITH all_events AS (
         drawnAmount AS amount_raw,
         drawnShares AS shares_raw
     FROM aave_v4_ethereum.etherfispoke_evt_borrow
+
+    UNION ALL
+
+    SELECT
+        'EtherFiSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.etherfispoke_evt_repay
 
     UNION ALL
 
@@ -303,6 +369,19 @@ WITH all_events AS (
 
     SELECT
         'ForexSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.forexspoke_evt_repay
+
+    UNION ALL
+
+    SELECT
+        'ForexSpoke' AS spoke,
         'liquidation' AS event_type,
         user,
         collateralReserveId AS reserveId,
@@ -350,6 +429,19 @@ WITH all_events AS (
         drawnAmount AS amount_raw,
         drawnShares AS shares_raw
     FROM aave_v4_ethereum.goldspoke_evt_borrow
+
+    UNION ALL
+
+    SELECT
+        'GoldSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.goldspoke_evt_repay
 
     UNION ALL
 
@@ -407,6 +499,19 @@ WITH all_events AS (
 
     SELECT
         'KelpSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.kelpspoke_evt_repay
+
+    UNION ALL
+
+    SELECT
+        'KelpSpoke' AS spoke,
         'liquidation' AS event_type,
         user,
         collateralReserveId AS reserveId,
@@ -459,6 +564,19 @@ WITH all_events AS (
 
     SELECT
         'LidoSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.lidospoke_evt_repay
+
+    UNION ALL
+
+    SELECT
+        'LidoSpoke' AS spoke,
         'liquidation' AS event_type,
         user,
         collateralReserveId AS reserveId,
@@ -506,6 +624,19 @@ WITH all_events AS (
         drawnAmount AS amount_raw,
         drawnShares AS shares_raw
     FROM aave_v4_ethereum.lombardbtcspoke_evt_borrow
+
+    UNION ALL
+
+    SELECT
+        'LombardBTCSpoke' AS spoke,
+        'repay' AS event_type,
+        user,
+        reserveId,
+        evt_block_time,
+        evt_block_date,
+        totalAmountRepaid AS amount_raw,
+        drawnShares AS shares_raw
+    FROM aave_v4_ethereum.lombardbtcspoke_evt_repay
 
     UNION ALL
 

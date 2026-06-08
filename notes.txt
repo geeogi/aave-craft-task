@@ -1,8 +1,29 @@
 - Can we track "exited users" without summing all of their events?
 - Users can exit a V3 position by transferring a/v tokens
 
+# User actions
 
-# Caveats
+We find the USD value of user actions using *today's* pricing. This helps us
+standardise actions through time and across markets and prevent being skewed
+by price movements.
+
+In other words, the actions show us the volume of user activity relative to
+current pricing, not relative to any historical pricing. This means that
+supplying 1 ETH today is counted as similar to supplying 1 ETH two years ago.
+
+USD is not historically accruate, but is added to aid comparison through time.
+
+Use actions are leaky, because users can change their position through
+transfers, not captured here.
+
+# V3 User Balances
+
+V3 is not scaling balances correctly. It shows the aToken amounts at time of
+transfer and does not account interest that has accrued since transfer.
+
+Positions in V3 can be transferred between addresses by way of an
+aToken/vToken transfer. This means that supply/withdraw/borrow/repay events do
+not tell the whole story of balances.
 
 Computing the current balances of all V3 users requires the full list of
 aToken addresses. For simplicity I have worked with a focussed list of the top

@@ -14,13 +14,31 @@ WITH reserve_asset_map AS (
         amount_per_share
     FROM query_7676557
 ),
+user_shares AS (
+    SELECT
+        user,
+        spoke,
+        reserveId,
+        CASE
+            WHEN event_type = 'supply' THEN shares_raw
+            WHEN event_type = 'withdraw' THEN -shares_raw
+            WHEN event_type = 'liquidation' THEN -shares_raw
+        END AS share_delta_raw
+    FROM query_7677938
+    WHERE event_type IN ('supply', 'withdraw', 'liquidation')
+),
 net_supplied_shares AS (
     SELECT
         user,
         spoke,
         reserveId,
-        current_supplied_shares_raw
-    FROM query_2332427
+        SUM(share_delta_raw) AS current_supplied_shares_raw
+    FROM user_shares
+    GROUP BY
+        user,
+        spoke,
+        reserveId
+    HAVING SUM(share_delta_raw) > 0
 )
 
 SELECT
