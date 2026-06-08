@@ -1,6 +1,6 @@
 -- V4 spoke, reserve, asset, hub, and price metadata across Ethereum.
 -- Single source of truth for spoke metadata used by downstream queries.
--- https://dune.com/queries/7676996
+-- Vhttps://dune.com/queries/7676557
 
 WITH spokes AS (
     SELECT
@@ -200,6 +200,155 @@ latest_prices AS (
         price
     FROM prices.latest
     WHERE blockchain = 'ethereum'
+),
+supply_events AS (
+    SELECT
+        'MainSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.mainspoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'BluechipSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.bluechipspoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'EthenaCorrelatedSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.ethenacorrelatedspoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'EthenaEcosystemSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.ethenaecosystemspoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'EtherFiSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.etherfispoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'ForexSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.forexspoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'GoldSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.goldspoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'KelpSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.kelpspoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'LidoSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.lidospoke_evt_supply
+    WHERE suppliedShares > 0
+
+    UNION ALL
+
+    SELECT
+        'LombardBTCSpoke' AS spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        evt_block_time,
+        evt_block_number,
+        evt_index
+    FROM aave_v4_ethereum.lombardbtcspoke_evt_supply
+    WHERE suppliedShares > 0
+),
+latest_supply_events AS (
+    SELECT
+        spoke,
+        reserveId,
+        suppliedAmount,
+        suppliedShares,
+        ROW_NUMBER() OVER (
+            PARTITION BY spoke, reserveId
+            ORDER BY evt_block_time DESC, evt_index DESC
+        ) AS event_rank
+    FROM supply_events
+),
+latest_supply_share_rates AS (
+    SELECT
+        spoke,
+        reserveId,
+        CAST(suppliedAmount AS DOUBLE) / NULLIF(CAST(suppliedShares AS DOUBLE), 0) AS amount_per_share
+    FROM latest_supply_events
+    WHERE event_rank = 1
 )
 
 SELECT
@@ -211,7 +360,8 @@ SELECT
     all_assets.decimals,
     all_assets.address,
     latest_prices.symbol,
-    latest_prices.price
+    latest_prices.price,
+    COALESCE(latest_supply_share_rates.amount_per_share, 1) AS amount_per_share
 FROM spoke_reserves
 INNER JOIN spokes
     ON spoke_reserves.spoke = spokes.spoke
@@ -222,6 +372,9 @@ INNER JOIN all_assets
    AND spoke_reserves.assetId = all_assets.assetId
 LEFT JOIN latest_prices
     ON all_assets.address = latest_prices.contract_address
+LEFT JOIN latest_supply_share_rates
+    ON spoke_reserves.spoke = latest_supply_share_rates.spoke
+   AND spoke_reserves.reserveId = latest_supply_share_rates.reserveId
 ORDER BY
     hubs.hub,
     spoke_reserves.spoke,

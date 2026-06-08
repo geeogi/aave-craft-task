@@ -9,8 +9,9 @@ WITH reserve_asset_map AS (
         decimals,
         address,
         symbol,
-        price
-    FROM query_7676996
+        price,
+        amount_per_share
+    FROM query_7676557
 ),
 net_supplied_shares AS (
     SELECT
@@ -26,8 +27,9 @@ SELECT
     reserve_asset_map.hub,
     net_supplied_shares.spoke,
     reserve_asset_map.symbol,
-    net_supplied_shares.current_supplied_shares_raw / POWER(10, reserve_asset_map.decimals) AS current_supplied_amount,
-    net_supplied_shares.current_supplied_shares_raw / POWER(10, reserve_asset_map.decimals) * reserve_asset_map.price AS current_position_usd
+    reserve_asset_map.amount_per_share,
+    net_supplied_shares.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) AS current_supplied_amount,
+    net_supplied_shares.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) * reserve_asset_map.price AS current_position_usd
 FROM net_supplied_shares
 INNER JOIN reserve_asset_map
     ON net_supplied_shares.spoke = reserve_asset_map.spoke
