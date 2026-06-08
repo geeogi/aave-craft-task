@@ -1,4 +1,5 @@
 -- User balances in USD across all V4 spokes.
+-- https://dune.com/queries/7676585
 
 WITH reserve_asset_map AS (
     SELECT
