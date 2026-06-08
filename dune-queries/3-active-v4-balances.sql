@@ -1,4 +1,5 @@
 -- V4 users on Ethereum Main Spoke with active supplied positions, valued in USD.
+-- https://dune.com/queries/7676585
 
 WITH active_positions AS (
     SELECT
