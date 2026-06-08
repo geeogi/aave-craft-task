@@ -16,6 +16,12 @@ USD is not historically accruate, but is added to aid comparison through time.
 Use actions are leaky, because users can change their position through
 transfers, not captured here.
 
+Activity retention - as opposed to balance retention - is useful because many
+users do not hold balances through time, they use Aave when they need it.
+
+Users split activity across wallets so a simple MAU chart may be more
+reflective.
+
 # V3 User Balances
 
 V3 is not scaling balances correctly. It shows the aToken amounts at time of
@@ -28,4 +34,7 @@ not tell the whole story of balances.
 Computing the current balances of all V3 users requires the full list of
 aToken addresses. For simplicity I have worked with a focussed list of the top
 reserves.
+
+To get better precision around V3 balances we use the liquidityIndex weekly to
+scale by interest accrued.
 

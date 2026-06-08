@@ -1,6 +1,5 @@
 -- User supply, withdraw, borrow, and repay activity across all Aave V4 Ethereum spokes.
 -- One row per address that has ever supplied to V4.
--- Requires repay rows to be present in query_7677938 from v4-all-events.sql.
 
 WITH asset_reference AS (
     SELECT DISTINCT
@@ -11,11 +10,12 @@ WITH asset_reference AS (
         address
     FROM query_7676557
 ),
-latest_prices AS (
+daily_prices AS (
     SELECT
         contract_address,
+        CAST(timestamp AS date) AS price_date,
         price
-    FROM prices.latest
+    FROM prices.day
     WHERE blockchain = 'ethereum'
 ),
 supply_events AS (
@@ -67,8 +67,9 @@ priced_supply_events AS (
     INNER JOIN asset_reference
         ON supply_events.spoke = asset_reference.spoke
        AND supply_events.reserveId = asset_reference.reserveId
-    LEFT JOIN latest_prices
-        ON asset_reference.address = latest_prices.contract_address
+    LEFT JOIN daily_prices
+        ON asset_reference.address = daily_prices.contract_address
+       AND supply_events.evt_block_date = daily_prices.price_date
 ),
 priced_withdraw_events AS (
     SELECT
@@ -79,8 +80,9 @@ priced_withdraw_events AS (
     INNER JOIN asset_reference
         ON withdraw_events.spoke = asset_reference.spoke
        AND withdraw_events.reserveId = asset_reference.reserveId
-    LEFT JOIN latest_prices
-        ON asset_reference.address = latest_prices.contract_address
+    LEFT JOIN daily_prices
+        ON asset_reference.address = daily_prices.contract_address
+       AND withdraw_events.evt_block_date = daily_prices.price_date
 ),
 priced_borrow_events AS (
     SELECT
@@ -91,8 +93,9 @@ priced_borrow_events AS (
     INNER JOIN asset_reference
         ON borrow_events.spoke = asset_reference.spoke
        AND borrow_events.reserveId = asset_reference.reserveId
-    LEFT JOIN latest_prices
-        ON asset_reference.address = latest_prices.contract_address
+    LEFT JOIN daily_prices
+        ON asset_reference.address = daily_prices.contract_address
+       AND borrow_events.evt_block_date = daily_prices.price_date
 ),
 priced_repay_events AS (
     SELECT
@@ -103,8 +106,9 @@ priced_repay_events AS (
     INNER JOIN asset_reference
         ON repay_events.spoke = asset_reference.spoke
        AND repay_events.reserveId = asset_reference.reserveId
-    LEFT JOIN latest_prices
-        ON asset_reference.address = latest_prices.contract_address
+    LEFT JOIN daily_prices
+        ON asset_reference.address = daily_prices.contract_address
+       AND repay_events.evt_block_date = daily_prices.price_date
 ),
 supply_metrics AS (
     SELECT

@@ -2,11 +2,12 @@
 -- One row per address that has ever supplied to V3.
 -- Uses Supply.onBehalfOf, Withdraw.user, Borrow.onBehalfOf, and Repay.user for user attribution.
 
-WITH latest_prices AS (
+WITH daily_prices AS (
     SELECT
         contract_address,
+        CAST(timestamp AS date) AS price_date,
         price
-    FROM prices.latest
+    FROM prices.day
     WHERE blockchain = 'ethereum'
 ),
 supply_events AS (
@@ -56,8 +57,9 @@ priced_supply_events AS (
     FROM supply_events
     LEFT JOIN token_decimals
         ON supply_events.reserve = token_decimals.contract_address
-    LEFT JOIN latest_prices
-        ON supply_events.reserve = latest_prices.contract_address
+    LEFT JOIN daily_prices
+        ON supply_events.reserve = daily_prices.contract_address
+       AND supply_events.evt_block_date = daily_prices.price_date
 ),
 priced_withdraw_events AS (
     SELECT
@@ -67,8 +69,9 @@ priced_withdraw_events AS (
     FROM withdraw_events
     LEFT JOIN token_decimals
         ON withdraw_events.reserve = token_decimals.contract_address
-    LEFT JOIN latest_prices
-        ON withdraw_events.reserve = latest_prices.contract_address
+    LEFT JOIN daily_prices
+        ON withdraw_events.reserve = daily_prices.contract_address
+       AND withdraw_events.evt_block_date = daily_prices.price_date
 ),
 priced_borrow_events AS (
     SELECT
@@ -78,8 +81,9 @@ priced_borrow_events AS (
     FROM borrow_events
     LEFT JOIN token_decimals
         ON borrow_events.reserve = token_decimals.contract_address
-    LEFT JOIN latest_prices
-        ON borrow_events.reserve = latest_prices.contract_address
+    LEFT JOIN daily_prices
+        ON borrow_events.reserve = daily_prices.contract_address
+       AND borrow_events.evt_block_date = daily_prices.price_date
 ),
 priced_repay_events AS (
     SELECT
@@ -89,8 +93,9 @@ priced_repay_events AS (
     FROM repay_events
     LEFT JOIN token_decimals
         ON repay_events.reserve = token_decimals.contract_address
-    LEFT JOIN latest_prices
-        ON repay_events.reserve = latest_prices.contract_address
+    LEFT JOIN daily_prices
+        ON repay_events.reserve = daily_prices.contract_address
+       AND repay_events.evt_block_date = daily_prices.price_date
 ),
 supply_metrics AS (
     SELECT
