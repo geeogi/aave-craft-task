@@ -1,16 +1,20 @@
 -- Weekly end-of-week user balances across all Aave V4 Ethereum spokes.
 -- Replace <v4_user_transfers_weekly_query_id> with the saved Dune query id for v4-user-transfers-weekly.sql.
+-- Replace <v4_asset_reference_weekly_query_id> with the saved Dune query id for v4-asset-reference-weekly.sql.
 
 WITH reserve_asset_map AS (
-    SELECT DISTINCT
+    SELECT
         hub,
         spoke,
         reserveId,
         assetId,
         decimals,
         address,
-        symbol
-    FROM query_7676557
+        symbol,
+        week,
+        amount_per_share,
+        asset_price_usd
+    FROM query_<v4_asset_reference_weekly_query_id>
 ),
 weekly_user_transfers AS (
     SELECT
@@ -21,38 +25,12 @@ weekly_user_transfers AS (
         weekly_share_delta_raw
     FROM query_<v4_user_transfers_weekly_query_id>
 ),
-weekly_rate_events AS (
-    SELECT
-        spoke,
-        reserveId,
-        date_trunc('week', evt_block_time) AS week,
-        CAST(amount_raw AS DOUBLE) / NULLIF(CAST(shares_raw AS DOUBLE), 0) AS amount_per_share,
-        ROW_NUMBER() OVER (
-            PARTITION BY spoke, reserveId, date_trunc('week', evt_block_time)
-            ORDER BY evt_block_time DESC
-        ) AS rate_rank
-    FROM query_7677938
-    WHERE event_type IN ('supply', 'withdraw')
-      AND shares_raw > 0
-),
-weekly_amount_per_share AS (
-    SELECT
-        spoke,
-        reserveId,
-        week,
-        amount_per_share
-    FROM weekly_rate_events
-    WHERE rate_rank = 1
-),
 reserve_weeks AS (
     SELECT DISTINCT
-        reserve_asset_map.spoke,
-        reserve_asset_map.reserveId,
-        date_trunc('week', prices.day.timestamp) AS week
+        spoke,
+        reserveId,
+        week
     FROM reserve_asset_map
-    INNER JOIN prices.day
-        ON reserve_asset_map.address = prices.day.contract_address
-    WHERE prices.day.blockchain = 'ethereum'
 ),
 user_activity_ranges AS (
     SELECT
@@ -110,42 +88,6 @@ carried_share_balances AS (
         user_week_spine.week,
         user_week_spine.user
 ),
-carried_amount_per_share AS (
-    SELECT
-        reserve_weeks.spoke,
-        reserve_weeks.reserveId,
-        reserve_weeks.week,
-        COALESCE(MAX_BY(weekly_amount_per_share.amount_per_share, weekly_amount_per_share.week), 1) AS amount_per_share
-    FROM reserve_weeks
-    LEFT JOIN weekly_amount_per_share
-        ON reserve_weeks.spoke = weekly_amount_per_share.spoke
-       AND reserve_weeks.reserveId = weekly_amount_per_share.reserveId
-       AND weekly_amount_per_share.week <= reserve_weeks.week
-    GROUP BY
-        reserve_weeks.spoke,
-        reserve_weeks.reserveId,
-        reserve_weeks.week
-),
-weekly_prices AS (
-    SELECT
-        contract_address,
-        date_trunc('week', timestamp) AS week,
-        price,
-        ROW_NUMBER() OVER (
-            PARTITION BY contract_address, date_trunc('week', timestamp)
-            ORDER BY timestamp DESC
-        ) AS price_rank
-    FROM prices.day
-    WHERE blockchain = 'ethereum'
-),
-latest_weekly_prices AS (
-    SELECT
-        contract_address,
-        week,
-        price
-    FROM weekly_prices
-    WHERE price_rank = 1
-),
 weekly_balances AS (
     SELECT
         carried_share_balances.user,
@@ -156,20 +98,14 @@ weekly_balances AS (
         reserve_asset_map.address,
         carried_share_balances.week,
         carried_share_balances.current_supplied_shares_raw,
-        carried_amount_per_share.amount_per_share,
-        carried_share_balances.current_supplied_shares_raw * carried_amount_per_share.amount_per_share / POWER(10, reserve_asset_map.decimals) AS current_supplied_amount,
-        latest_weekly_prices.price AS asset_price_usd
+        reserve_asset_map.amount_per_share,
+        carried_share_balances.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) AS current_supplied_amount,
+        reserve_asset_map.asset_price_usd
     FROM carried_share_balances
     INNER JOIN reserve_asset_map
         ON carried_share_balances.spoke = reserve_asset_map.spoke
        AND carried_share_balances.reserveId = reserve_asset_map.reserveId
-    INNER JOIN carried_amount_per_share
-        ON carried_share_balances.spoke = carried_amount_per_share.spoke
-       AND carried_share_balances.reserveId = carried_amount_per_share.reserveId
-       AND carried_share_balances.week = carried_amount_per_share.week
-    LEFT JOIN latest_weekly_prices
-        ON reserve_asset_map.address = latest_weekly_prices.contract_address
-       AND carried_share_balances.week = latest_weekly_prices.week
+       AND carried_share_balances.week = reserve_asset_map.week
 )
 
 SELECT

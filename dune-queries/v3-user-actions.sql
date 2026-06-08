@@ -53,7 +53,7 @@ priced_supply_events AS (
     SELECT
         supply_events.user,
         supply_events.evt_block_date,
-        supply_events.amount_raw / POWER(10, token_decimals.decimals) * latest_prices.price AS amount_usd
+        supply_events.amount_raw / POWER(10, token_decimals.decimals) * daily_prices.price AS amount_usd
     FROM supply_events
     LEFT JOIN token_decimals
         ON supply_events.reserve = token_decimals.contract_address
@@ -65,7 +65,7 @@ priced_withdraw_events AS (
     SELECT
         withdraw_events.user,
         withdraw_events.evt_block_date,
-        withdraw_events.amount_raw / POWER(10, token_decimals.decimals) * latest_prices.price AS amount_usd
+        withdraw_events.amount_raw / POWER(10, token_decimals.decimals) * daily_prices.price AS amount_usd
     FROM withdraw_events
     LEFT JOIN token_decimals
         ON withdraw_events.reserve = token_decimals.contract_address
@@ -77,7 +77,7 @@ priced_borrow_events AS (
     SELECT
         borrow_events.user,
         borrow_events.evt_block_date,
-        borrow_events.amount_raw / POWER(10, token_decimals.decimals) * latest_prices.price AS amount_usd
+        borrow_events.amount_raw / POWER(10, token_decimals.decimals) * daily_prices.price AS amount_usd
     FROM borrow_events
     LEFT JOIN token_decimals
         ON borrow_events.reserve = token_decimals.contract_address
@@ -89,7 +89,7 @@ priced_repay_events AS (
     SELECT
         repay_events.user,
         repay_events.evt_block_date,
-        repay_events.amount_raw / POWER(10, token_decimals.decimals) * latest_prices.price AS amount_usd
+        repay_events.amount_raw / POWER(10, token_decimals.decimals) * daily_prices.price AS amount_usd
     FROM repay_events
     LEFT JOIN token_decimals
         ON repay_events.reserve = token_decimals.contract_address

@@ -1,14 +1,29 @@
 -- User supply, withdraw, borrow, and repay activity across all Aave V4 Ethereum spokes.
 -- One row per address that has ever supplied to V4.
+-- Replace <v4_asset_reference_weekly_query_id> with the saved Dune query id for v4-asset-reference-weekly.sql.
 
 WITH asset_reference AS (
-    SELECT DISTINCT
+    SELECT
         hub,
         spoke,
         reserveId,
         decimals,
         address
-    FROM query_7676557
+    FROM (
+        SELECT
+            hub,
+            spoke,
+            reserveId,
+            decimals,
+            address,
+            week,
+            ROW_NUMBER() OVER (
+                PARTITION BY spoke, reserveId
+                ORDER BY week DESC
+            ) AS asset_reference_rank
+        FROM query_<v4_asset_reference_weekly_query_id>
+    )
+    WHERE asset_reference_rank = 1
 ),
 daily_prices AS (
     SELECT
@@ -62,7 +77,7 @@ priced_supply_events AS (
     SELECT
         supply_events.user,
         supply_events.evt_block_date,
-        supply_events.amount_raw / POWER(10, asset_reference.decimals) * latest_prices.price AS amount_usd
+        supply_events.amount_raw / POWER(10, asset_reference.decimals) * daily_prices.price AS amount_usd
     FROM supply_events
     INNER JOIN asset_reference
         ON supply_events.spoke = asset_reference.spoke
@@ -75,7 +90,7 @@ priced_withdraw_events AS (
     SELECT
         withdraw_events.user,
         withdraw_events.evt_block_date,
-        withdraw_events.amount_raw / POWER(10, asset_reference.decimals) * latest_prices.price AS amount_usd
+        withdraw_events.amount_raw / POWER(10, asset_reference.decimals) * daily_prices.price AS amount_usd
     FROM withdraw_events
     INNER JOIN asset_reference
         ON withdraw_events.spoke = asset_reference.spoke
@@ -88,7 +103,7 @@ priced_borrow_events AS (
     SELECT
         borrow_events.user,
         borrow_events.evt_block_date,
-        borrow_events.amount_raw / POWER(10, asset_reference.decimals) * latest_prices.price AS amount_usd
+        borrow_events.amount_raw / POWER(10, asset_reference.decimals) * daily_prices.price AS amount_usd
     FROM borrow_events
     INNER JOIN asset_reference
         ON borrow_events.spoke = asset_reference.spoke
@@ -101,7 +116,7 @@ priced_repay_events AS (
     SELECT
         repay_events.user,
         repay_events.evt_block_date,
-        repay_events.amount_raw / POWER(10, asset_reference.decimals) * latest_prices.price AS amount_usd
+        repay_events.amount_raw / POWER(10, asset_reference.decimals) * daily_prices.price AS amount_usd
     FROM repay_events
     INNER JOIN asset_reference
         ON repay_events.spoke = asset_reference.spoke
