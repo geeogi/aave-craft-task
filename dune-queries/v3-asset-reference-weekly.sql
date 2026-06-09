@@ -1,6 +1,7 @@
 -- Weekly Aave V3 reserve reference for selected Ethereum assets.
 -- Uses the latest ReserveDataUpdated event in each week as the liquidityIndex snapshot.
 -- https://dune.com/queries/7678464
+-- dune.geeogi.result_aave_v3_ethereum_asset_reference_weekly
 
 WITH selected_assets AS (
     SELECT
