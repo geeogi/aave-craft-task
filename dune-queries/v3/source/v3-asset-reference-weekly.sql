@@ -37,6 +37,14 @@ WITH selected_assets AS (
     UNION ALL
 
     SELECT
+        'rsETH' AS asset,
+        0xA1290d69cA485bC62b5EA2c7cC9C42A25aC6A3A3 AS reserve,
+        0x8Eb270e296023E9D92081fdF967dDd7878724424 AS a_token,
+        18 AS decimals
+
+    UNION ALL
+
+    SELECT
         'cbBTC' AS asset,
         0xcBB7C0000aB88B473b1f5AFd9ef808440eed33BF AS reserve,
         0x5c647Ce0Ae10658ec44FA4E11A51c96E94efd1Dd AS a_token,
@@ -57,6 +65,22 @@ WITH selected_assets AS (
         0xdAC17F958D2ee523a2206206994597C13D831ec7 AS reserve,
         0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a AS a_token,
         6 AS decimals
+
+    UNION ALL
+
+    SELECT
+        'USDe' AS asset,
+        0x4c9EDD5852cd905f086C759E8383e09bff1E68B3 AS reserve,
+        0x41393e5e337606dc3821075Af65AeE84D7688CBD AS a_token,
+        18 AS decimals
+
+    UNION ALL
+
+    SELECT
+        'sUSDe' AS asset,
+        0x9D39A5DE30e57443Bff2A8307A4256C8797A3497 AS reserve,
+        0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34 AS a_token,
+        18 AS decimals
 ),
 weekly_reserve_updates AS (
     SELECT
