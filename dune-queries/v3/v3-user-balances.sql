@@ -12,7 +12,7 @@ WITH weekly_balances AS (
         current_a_token_balance,
         asset_price_usd,
         current_balance_usd
-    FROM query_7678703
+    FROM dune.geeogi.result_aave_v3_ethereum_user_balances_weekly
 ),
 latest_week AS (
     SELECT
