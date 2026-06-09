@@ -21,7 +21,7 @@ weekly_user_positions AS (
         current_supplied_amount,
         asset_price_usd,
         current_position_usd
-    FROM query_7682230
+    FROM dune.geeogi_team.result_aave_v4_ethereum_user_balances_weekly
 ),
 weekly_balances AS (
     SELECT

@@ -21,7 +21,7 @@ v3_start_balances AS (
 v4_historical_users AS (
     SELECT DISTINCT
         user
-    FROM query_7682230
+    FROM dune.geeogi_team.result_aave_v4_ethereum_user_balances_weekly
 ),
 v3_current_balances AS (
     SELECT

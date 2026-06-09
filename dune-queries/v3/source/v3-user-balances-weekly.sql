@@ -21,7 +21,7 @@ weekly_user_transfers AS (
         week,
         user,
         weekly_amount_delta_raw
-    FROM dune.geeogi.result_aave_v3_ethereum_user_transfers_weekly
+    FROM query_7678569
 ),
 user_scaled_transfers AS (
     SELECT

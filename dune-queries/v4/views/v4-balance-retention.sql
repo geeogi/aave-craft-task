@@ -14,7 +14,7 @@ weekly_balances AS (
         week,
         user,
         SUM(current_position_usd) AS current_balance_usd
-    FROM query_7682230
+    FROM dune.geeogi_team.result_aave_v4_ethereum_user_balances_weekly
     GROUP BY
         week,
         user

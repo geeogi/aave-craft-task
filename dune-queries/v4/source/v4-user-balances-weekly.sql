@@ -1,5 +1,6 @@
 -- Weekly end-of-week user balances across all Aave V4 Ethereum spokes.
 -- https://dune.com/queries/7682230
+-- dune.geeogi_team.result_aave_v4_ethereum_user_balances_weekly
 
 WITH reserve_asset_map AS (
     SELECT
@@ -22,7 +23,7 @@ weekly_user_transfers AS (
         reserveId,
         week,
         weekly_share_delta_raw
-    FROM dune.geeogi.result_aave_v4_ethereum_user_transfers_weekly
+    FROM query_7682214
 ),
 reserve_weeks AS (
     SELECT DISTINCT
