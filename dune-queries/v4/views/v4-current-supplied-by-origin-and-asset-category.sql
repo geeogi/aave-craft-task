@@ -1,5 +1,6 @@
 -- Current V4 supplied balance split by user origin and asset category.
 -- Intended for a two-bar stacked chart: Prior V3 user vs No V3 history.
+-- https://dune.com/queries/7685002
 
 WITH v3_historical_users AS (
     SELECT DISTINCT

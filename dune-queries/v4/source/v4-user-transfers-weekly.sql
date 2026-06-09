@@ -1,6 +1,5 @@
 -- Weekly net supplied share deltas across all Aave V4 Ethereum spokes.
 -- https://dune.com/queries/7682214
--- dune.geeogi_team.result_aave_v4_ethereum_user_transfers_weekly
 
 WITH user_shares AS (
     SELECT
