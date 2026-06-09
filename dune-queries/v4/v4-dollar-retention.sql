@@ -7,7 +7,9 @@
 -- https://dune.com/queries/7682899/11639581
 
 WITH params AS (
-    SELECT 100 AS min_balance_usd
+    SELECT
+        100 AS min_balance_usd,
+        TIMESTAMP '2026-03-30' AS min_cohort_week
 ),
 weekly_user_positions AS (
     SELECT
@@ -19,7 +21,7 @@ weekly_user_positions AS (
         current_supplied_amount,
         asset_price_usd,
         current_position_usd
-    FROM dune.geeogi.result_aave_v4_ethereum_user_balances_weekly
+    FROM query_7682230
 ),
 weekly_balances AS (
     SELECT
@@ -46,18 +48,13 @@ user_cohorts AS (
     FROM cohort_source
     GROUP BY user
 ),
-latest_cohort_week AS (
-    SELECT
-        MAX(cohort_week) AS cohort_week
-    FROM user_cohorts
-),
 selected_cohorts AS (
     SELECT
         user_cohorts.user,
         user_cohorts.cohort_week
     FROM user_cohorts
-    INNER JOIN latest_cohort_week
-        ON user_cohorts.cohort_week >= date_add('week', -11, latest_cohort_week.cohort_week)
+    CROSS JOIN params
+    WHERE user_cohorts.cohort_week >= params.min_cohort_week
 ),
 cohort_sizes AS (
     SELECT

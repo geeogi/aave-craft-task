@@ -7,7 +7,9 @@
 -- https://dune.com/queries/7682869/11639552
 
 WITH params AS (
-    SELECT 100 AS min_balance_usd
+    SELECT
+        100 AS min_balance_usd,
+        TIMESTAMP '2026-03-30' AS min_cohort_week
 ),
 weekly_user_positions AS (
     SELECT
@@ -46,18 +48,13 @@ user_cohorts AS (
     FROM cohort_source
     GROUP BY user
 ),
-latest_cohort_week AS (
-    SELECT
-        MAX(cohort_week) AS cohort_week
-    FROM user_cohorts
-),
 selected_cohorts AS (
     SELECT
         user_cohorts.user,
         user_cohorts.cohort_week
     FROM user_cohorts
-    INNER JOIN latest_cohort_week
-        ON user_cohorts.cohort_week >= date_add('week', -11, latest_cohort_week.cohort_week)
+    CROSS JOIN params
+    WHERE user_cohorts.cohort_week >= params.min_cohort_week
 ),
 cohort_sizes AS (
     SELECT
