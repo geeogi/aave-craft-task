@@ -1,4 +1,5 @@
 -- Weekly V4 supplied balance split by whether the user has any V3 balance history.
+-- https://dune.com/queries/7683488/11640216
 
 WITH v3_historical_users AS (
     SELECT DISTINCT

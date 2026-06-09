@@ -1,6 +1,6 @@
 -- Users with V3 balance > $100 on the V4 start week who later used V4.
 -- Buckets migrators by their current combined V3 + V4 balances and shows current V3 and V4 totals by bucket.
--- https://dune.com/queries/76841731
+-- https://dune.com/queries/7684173
 
 WITH params AS (
     SELECT
