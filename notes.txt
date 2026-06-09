@@ -61,5 +61,10 @@ adjust positions because of market pricing.
 
 # Views
 
-Shape looks like we're missing whales on V4. The smaller user shape of the
+Balance buckets shape looks like we're missing whales on V4. The smaller user shape of the
 curve is there. The balance buckets show us how our user profile could look.
+This is expected because larger players need smaller players to build the
+base.
+
+V4 total supplied by user origin shows us that V3 users are a significant
+source of acquisition, but so is new addresses (address rotation).
