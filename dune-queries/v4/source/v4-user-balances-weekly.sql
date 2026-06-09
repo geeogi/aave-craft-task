@@ -14,7 +14,7 @@ WITH reserve_asset_map AS (
         week,
         amount_per_share,
         asset_price_usd
-    FROM dune.geeogi.result_aave_v4_ethereum_asset_reference_weekly
+    FROM dune.geeogi_team.result_aave_v4_ethereum_asset_reference_weekly
 ),
 weekly_user_transfers AS (
     SELECT

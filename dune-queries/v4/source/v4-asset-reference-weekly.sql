@@ -1,6 +1,6 @@
 -- Weekly Aave V4 asset reference across all Ethereum spokes.
 -- https://dune.com/queries/7676557
--- dune.geeogi.result_aave_v4_ethereum_asset_reference_weekly
+-- dune.geeogi_team.result_aave_v4_ethereum_asset_reference_weekly
 
 WITH params AS (
     SELECT DATE '2026-03-28' AS min_week_start

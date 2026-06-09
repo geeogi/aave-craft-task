@@ -4,7 +4,7 @@
 WITH v3_historical_users AS (
     SELECT DISTINCT
         user
-    FROM dune.geeogi.result_aave_v3_ethereum_user_balances_weekly
+    FROM dune.geeogi_team.result_aave_v3_ethereum_user_balances_weekly
 ),
 v4_current_balances AS (
     SELECT

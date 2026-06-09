@@ -1,6 +1,6 @@
 -- Weekly end-of-week user balances for selected Aave V3 Ethereum assets.
 -- https://dune.com/queries/7678703
--- dune.geeogi.result_aave_v3_ethereum_user_balances_weekly
+-- dune.geeogi_team.result_aave_v3_ethereum_user_balances_weekly
 
 WITH weekly_asset_reference AS (
     SELECT
@@ -10,7 +10,7 @@ WITH weekly_asset_reference AS (
         decimals,
         week,
         liquidityIndex
-    FROM dune.geeogi.result_aave_v3_ethereum_asset_reference_weekly
+    FROM dune.geeogi_team.result_aave_v3_ethereum_asset_reference_weekly
 ),
 weekly_user_transfers AS (
     SELECT

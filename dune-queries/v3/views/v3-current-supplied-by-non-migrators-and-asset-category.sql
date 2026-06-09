@@ -12,7 +12,7 @@ v3_start_balances AS (
     SELECT
         user,
         SUM(current_balance_usd) AS v3_start_balance_usd
-    FROM dune.geeogi.result_aave_v3_ethereum_user_balances_weekly
+    FROM dune.geeogi_team.result_aave_v3_ethereum_user_balances_weekly
     CROSS JOIN params
     WHERE week = params.v4_start_week
     GROUP BY user
