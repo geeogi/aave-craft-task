@@ -2,7 +2,14 @@
 - Users can exit a V3 position by transferring a/v tokens
 
 Aave V3 Ethereum is chosen because it is the primary target for user
-acquisition for Aave V4 and similarly positioned.
+acquisition for Aave V4 and similarly positioned. Also, it is the largest DeFi
+lending market and understanding its userbase is important. Short term
+competitor is Plasma/Mantle but focussing on that market as an aquisition
+target feels self-competitive. The goal is to identify the type of users who
+have grown Aave V3 so we can attract more of them.
+
+Metrics are skewed towards capital distribution as opposed to user counts,
+because market size is the leading KPI.
 
 # User actions
 
@@ -51,3 +58,8 @@ protocol is not useful.
 For dollar retention we use prices-at-cohort-week to reduce skew from market
 prices. This is not perfect because many users are price sensitive and will
 adjust positions because of market pricing.
+
+# Views
+
+Shape looks like we're missing whales on V4. The smaller user shape of the
+curve is there. The balance buckets show us how our user profile could look.
