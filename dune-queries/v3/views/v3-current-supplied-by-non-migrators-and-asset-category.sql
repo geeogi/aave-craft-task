@@ -1,7 +1,22 @@
--- Current V3 supplied balance for users with no V4 history, split by asset category.
--- Intended for a single stacked bar chart of non-migrator supply composition.
+-- Current V3 supplied balance for users with V3 balance > $100 on the V4 start week
+-- who never used V4, split by asset category.
 
-WITH v4_historical_users AS (
+WITH params AS (
+    SELECT
+        TIMESTAMP '2026-03-30' AS v4_start_week,
+        100 AS min_start_balance_usd
+),
+v3_start_balances AS (
+    SELECT
+        user,
+        SUM(current_balance_usd) AS v3_start_balance_usd
+    FROM dune.geeogi.result_aave_v3_ethereum_user_balances_weekly
+    CROSS JOIN params
+    WHERE week = params.v4_start_week
+    GROUP BY user
+    HAVING SUM(current_balance_usd) > MAX(params.min_start_balance_usd)
+),
+v4_historical_users AS (
     SELECT DISTINCT
         user
     FROM query_7682230
@@ -35,9 +50,11 @@ classified_balances AS (
         COALESCE(asset_categories.category_order, (SELECT MAX(category_order) + 1 FROM asset_categories)) AS category_order,
         v3_current_balances.user,
         v3_current_balances.current_balance_usd
-    FROM v3_current_balances
+    FROM v3_start_balances
+    INNER JOIN v3_current_balances
+        ON v3_start_balances.user = v3_current_balances.user
     LEFT JOIN v4_historical_users
-        ON v3_current_balances.user = v4_historical_users.user
+        ON v3_start_balances.user = v4_historical_users.user
     LEFT JOIN asset_categories
         ON v3_current_balances.symbol = asset_categories.symbol
     WHERE v4_historical_users.user IS NULL
@@ -46,7 +63,6 @@ category_aggregates AS (
     SELECT
         asset_category,
         category_order,
-        COUNT(DISTINCT user) AS users,
         SUM(current_balance_usd) AS total_position_usd
     FROM classified_balances
     GROUP BY
@@ -59,7 +75,6 @@ SELECT
     1 AS group_order,
     category_definitions.asset_category,
     category_definitions.category_order,
-    COALESCE(category_aggregates.users, 0) AS users,
     COALESCE(category_aggregates.total_position_usd, 0) AS total_position_usd
 FROM category_definitions
 LEFT JOIN category_aggregates

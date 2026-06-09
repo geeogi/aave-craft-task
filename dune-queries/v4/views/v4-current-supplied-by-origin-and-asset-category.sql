@@ -55,7 +55,6 @@ origin_category_aggregates AS (
         user_origin,
         asset_category,
         category_order,
-        COUNT(DISTINCT user) AS users,
         SUM(current_position_usd) AS total_position_usd
     FROM classified_balances
     GROUP BY
@@ -69,7 +68,6 @@ SELECT
     origin_definitions.origin_order,
     category_definitions.asset_category,
     category_definitions.category_order,
-    COALESCE(origin_category_aggregates.users, 0) AS users,
     COALESCE(origin_category_aggregates.total_position_usd, 0) AS total_position_usd
 FROM origin_definitions
 CROSS JOIN category_definitions
