@@ -1,6 +1,6 @@
 -- User supply, withdraw, borrow, and repay activity across all Aave V4 Ethereum spokes.
 -- One row per address that has ever supplied to V4.
--- Replace <v4_asset_reference_weekly_query_id> with the saved Dune query id for v4-asset-reference-weekly.sql.
+-- Uses dune.geeogi.result_aave_v4_ethereum_asset_reference_weekly.
 
 WITH asset_reference AS (
     SELECT
@@ -21,7 +21,7 @@ WITH asset_reference AS (
                 PARTITION BY spoke, reserveId
                 ORDER BY week DESC
             ) AS asset_reference_rank
-        FROM query_<v4_asset_reference_weekly_query_id>
+        FROM dune.geeogi.result_aave_v4_ethereum_asset_reference_weekly
     )
     WHERE asset_reference_rank = 1
 ),

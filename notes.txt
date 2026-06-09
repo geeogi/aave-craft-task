@@ -38,3 +38,7 @@ reserves.
 To get better precision around V3 balances we use the liquidityIndex weekly to
 scale by interest accrued.
 
+# Retention
+
+I choose $100 as a threshold for retention because lower than that the
+protocol is not useful.

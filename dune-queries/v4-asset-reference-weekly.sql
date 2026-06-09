@@ -1,64 +1,9 @@
 -- Weekly Aave V4 asset reference across all Ethereum spokes.
--- Includes static reserve metadata plus carried-forward weekly amount_per_share and weekly price.
+-- https://dune.com/queries/7676557
+-- dune.geeogi.result_aave_v4_ethereum_asset_reference_weekly
 
-WITH spokes AS (
-    SELECT
-        'MainSpoke' AS spoke,
-        0x94e7A5dCbE816e498b89aB752661904E2F56c485 AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'BluechipSpoke' AS spoke,
-        0x973a023A77420ba610f06b3858aD991Df6d85A08 AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'EthenaCorrelatedSpoke' AS spoke,
-        0x58131E79531caB1d52301228d1f7b842F26B9649 AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'EthenaEcosystemSpoke' AS spoke,
-        0xba1B3D55D249692b669A164024A838309B7508AF AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'EtherFiSpoke' AS spoke,
-        0xbF10BDfE177dE0336aFD7fcCF80A904E15386219 AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'ForexSpoke' AS spoke,
-        0xD8B93635b8C6d0fF98CbE90b5988E3F2d1Cd9da1 AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'GoldSpoke' AS spoke,
-        0x65407b940966954b23dfA3caA5C0702bB42984DC AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'KelpSpoke' AS spoke,
-        0x3131FE68C4722e726fe6B2819ED68e514395B9a4 AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'LidoSpoke' AS spoke,
-        0xe1900480ac69f0B296841Cd01cC37546d92F35Cd AS spoke_address
-
-    UNION ALL
-
-    SELECT
-        'LombardBTCSpoke' AS spoke,
-        0x7EC68b5695e803e98a21a9A05d744F28b0a7753D AS spoke_address
+WITH params AS (
+    SELECT DATE '2026-03-28' AS min_week_start
 ),
 hubs AS (
     SELECT
@@ -240,33 +185,7 @@ weekly_amount_per_share AS (
     FROM weekly_rate_events
     WHERE rate_rank = 1
 ),
-reserve_weeks AS (
-    SELECT DISTINCT
-        reserve_asset_map.spoke,
-        reserve_asset_map.reserveId,
-        date_trunc('week', prices.day.timestamp) AS week
-    FROM reserve_asset_map
-    INNER JOIN prices.day
-        ON reserve_asset_map.address = prices.day.contract_address
-    WHERE prices.day.blockchain = 'ethereum'
-),
-carried_amount_per_share AS (
-    SELECT
-        reserve_weeks.spoke,
-        reserve_weeks.reserveId,
-        reserve_weeks.week,
-        COALESCE(MAX_BY(weekly_amount_per_share.amount_per_share, weekly_amount_per_share.week), 1) AS amount_per_share
-    FROM reserve_weeks
-    LEFT JOIN weekly_amount_per_share
-        ON reserve_weeks.spoke = weekly_amount_per_share.spoke
-       AND reserve_weeks.reserveId = weekly_amount_per_share.reserveId
-       AND weekly_amount_per_share.week <= reserve_weeks.week
-    GROUP BY
-        reserve_weeks.spoke,
-        reserve_weeks.reserveId,
-        reserve_weeks.week
-),
-weekly_prices AS (
+weekly_asset_prices AS (
     SELECT
         contract_address,
         date_trunc('week', timestamp) AS week,
@@ -283,8 +202,35 @@ latest_weekly_prices AS (
         contract_address,
         week,
         price
-    FROM weekly_prices
+    FROM weekly_asset_prices
     WHERE price_rank = 1
+),
+reserve_weeks AS (
+    SELECT DISTINCT
+        reserve_asset_map.spoke,
+        reserve_asset_map.reserveId,
+        latest_weekly_prices.week
+    FROM reserve_asset_map
+    INNER JOIN latest_weekly_prices
+        ON reserve_asset_map.address = latest_weekly_prices.contract_address
+    CROSS JOIN params
+    WHERE latest_weekly_prices.week > params.min_week_start
+),
+carried_amount_per_share AS (
+    SELECT
+        reserve_weeks.spoke,
+        reserve_weeks.reserveId,
+        reserve_weeks.week,
+        COALESCE(MAX_BY(weekly_amount_per_share.amount_per_share, weekly_amount_per_share.week), 1) AS amount_per_share
+    FROM reserve_weeks
+    LEFT JOIN weekly_amount_per_share
+        ON reserve_weeks.spoke = weekly_amount_per_share.spoke
+       AND reserve_weeks.reserveId = weekly_amount_per_share.reserveId
+       AND weekly_amount_per_share.week <= reserve_weeks.week
+    GROUP BY
+        reserve_weeks.spoke,
+        reserve_weeks.reserveId,
+        reserve_weeks.week
 )
 
 SELECT

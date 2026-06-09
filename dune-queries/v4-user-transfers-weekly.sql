@@ -1,5 +1,6 @@
 -- Weekly net supplied share deltas across all Aave V4 Ethereum spokes.
--- Replace with the saved Dune query id for v4-user-transfers-weekly.sql where referenced downstream.
+-- https://dune.com/queries/7682214
+-- dune.geeogi.result_aave_v4_ethereum_user_transfers_weekly
 
 WITH user_shares AS (
     SELECT

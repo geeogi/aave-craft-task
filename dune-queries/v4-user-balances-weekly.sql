@@ -1,6 +1,5 @@
 -- Weekly end-of-week user balances across all Aave V4 Ethereum spokes.
--- Replace <v4_user_transfers_weekly_query_id> with the saved Dune query id for v4-user-transfers-weekly.sql.
--- Replace <v4_asset_reference_weekly_query_id> with the saved Dune query id for v4-asset-reference-weekly.sql.
+-- https://dune.com/queries/7682230
 
 WITH reserve_asset_map AS (
     SELECT
@@ -14,7 +13,7 @@ WITH reserve_asset_map AS (
         week,
         amount_per_share,
         asset_price_usd
-    FROM query_<v4_asset_reference_weekly_query_id>
+    FROM dune.geeogi.result_aave_v4_ethereum_asset_reference_weekly
 ),
 weekly_user_transfers AS (
     SELECT
@@ -23,7 +22,7 @@ weekly_user_transfers AS (
         reserveId,
         week,
         weekly_share_delta_raw
-    FROM query_<v4_user_transfers_weekly_query_id>
+    FROM dune.geeogi.result_aave_v4_ethereum_user_transfers_weekly
 ),
 reserve_weeks AS (
     SELECT DISTINCT
@@ -44,19 +43,6 @@ user_activity_ranges AS (
         reserveId,
         user
 ),
-event_week_balances AS (
-    SELECT
-        weekly_user_transfers.spoke,
-        weekly_user_transfers.reserveId,
-        weekly_user_transfers.week,
-        weekly_user_transfers.user,
-        SUM(weekly_user_transfers.weekly_share_delta_raw) OVER (
-            PARTITION BY weekly_user_transfers.spoke, weekly_user_transfers.reserveId, weekly_user_transfers.user
-            ORDER BY weekly_user_transfers.week
-            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-        ) AS current_supplied_shares_raw
-    FROM weekly_user_transfers
-),
 user_week_spine AS (
     SELECT
         user_activity_ranges.spoke,
@@ -69,43 +55,42 @@ user_week_spine AS (
        AND user_activity_ranges.reserveId = reserve_weeks.reserveId
        AND reserve_weeks.week >= user_activity_ranges.first_active_week
 ),
-carried_share_balances AS (
+weekly_share_balances AS (
     SELECT
         user_week_spine.spoke,
         user_week_spine.reserveId,
         user_week_spine.week,
         user_week_spine.user,
-        MAX_BY(event_week_balances.current_supplied_shares_raw, event_week_balances.week) AS current_supplied_shares_raw
+        SUM(COALESCE(weekly_user_transfers.weekly_share_delta_raw, 0)) OVER (
+            PARTITION BY user_week_spine.spoke, user_week_spine.reserveId, user_week_spine.user
+            ORDER BY user_week_spine.week
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS current_supplied_shares_raw
     FROM user_week_spine
-    LEFT JOIN event_week_balances
-        ON user_week_spine.spoke = event_week_balances.spoke
-       AND user_week_spine.reserveId = event_week_balances.reserveId
-       AND user_week_spine.user = event_week_balances.user
-       AND event_week_balances.week <= user_week_spine.week
-    GROUP BY
-        user_week_spine.spoke,
-        user_week_spine.reserveId,
-        user_week_spine.week,
-        user_week_spine.user
+    LEFT JOIN weekly_user_transfers
+        ON user_week_spine.spoke = weekly_user_transfers.spoke
+       AND user_week_spine.reserveId = weekly_user_transfers.reserveId
+       AND user_week_spine.user = weekly_user_transfers.user
+       AND user_week_spine.week = weekly_user_transfers.week
 ),
 weekly_balances AS (
     SELECT
-        carried_share_balances.user,
+        weekly_share_balances.user,
         reserve_asset_map.hub,
-        carried_share_balances.spoke,
+        weekly_share_balances.spoke,
         reserve_asset_map.symbol,
         reserve_asset_map.reserveId,
         reserve_asset_map.address,
-        carried_share_balances.week,
-        carried_share_balances.current_supplied_shares_raw,
+        weekly_share_balances.week,
+        weekly_share_balances.current_supplied_shares_raw,
         reserve_asset_map.amount_per_share,
-        carried_share_balances.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) AS current_supplied_amount,
+        weekly_share_balances.current_supplied_shares_raw * reserve_asset_map.amount_per_share / POWER(10, reserve_asset_map.decimals) AS current_supplied_amount,
         reserve_asset_map.asset_price_usd
-    FROM carried_share_balances
+    FROM weekly_share_balances
     INNER JOIN reserve_asset_map
-        ON carried_share_balances.spoke = reserve_asset_map.spoke
-       AND carried_share_balances.reserveId = reserve_asset_map.reserveId
-       AND carried_share_balances.week = reserve_asset_map.week
+        ON weekly_share_balances.spoke = reserve_asset_map.spoke
+       AND weekly_share_balances.reserveId = reserve_asset_map.reserveId
+       AND weekly_share_balances.week = reserve_asset_map.week
 )
 
 SELECT

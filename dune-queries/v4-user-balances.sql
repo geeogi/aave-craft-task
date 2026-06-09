@@ -1,5 +1,5 @@
 -- User balances in USD across all V4 spokes.
--- Replace <v4_user_balances_weekly_query_id> with the saved Dune query id for v4-user-balances-weekly.sql.
+-- https://dune.com/queries/7676585
 
 WITH weekly_balances AS (
     SELECT
@@ -15,7 +15,7 @@ WITH weekly_balances AS (
         current_supplied_amount,
         asset_price_usd,
         current_position_usd
-    FROM query_<v4_user_balances_weekly_query_id>
+    FROM query_7682230
 ),
 latest_week AS (
     SELECT

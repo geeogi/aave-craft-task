@@ -1,15 +1,18 @@
 -- Weekly balance-based user retention curve for Aave V4 Ethereum.
 -- Cohort entry is the first week a user has balance >= 100 USD.
--- Retention is whether the user also has balance >= 100 USD in each later observation week.
--- Limited to the most recent 12 cohort weeks.
--- Replace <v4_user_balances_weekly_query_id> with the saved Dune query id for v4-user-balances-weekly.sql.
+-- Retention is whether the user also has balance >= 100 USD in later observation weeks.
+-- https://dune.com/queries/7682257
+-- https://dune.com/queries/7682257/11638888
 
-WITH weekly_balances AS (
+WITH params AS (
+    SELECT 100 AS min_balance_usd
+),
+weekly_balances AS (
     SELECT
         week,
         user,
         SUM(current_position_usd) AS current_balance_usd
-    FROM query_<v4_user_balances_weekly_query_id>
+    FROM query_7682230
     GROUP BY
         week,
         user
@@ -19,7 +22,8 @@ cohort_source AS (
         week,
         user
     FROM weekly_balances
-    WHERE current_balance_usd >= 100
+    CROSS JOIN params
+    WHERE current_balance_usd >= params.min_balance_usd
 ),
 user_cohorts AS (
     SELECT
@@ -62,14 +66,29 @@ cohort_observations AS (
 
 SELECT
     cohort_observations.cohort_week,
+    CAST(cohort_observations.cohort_week AS date) AS cohort_date,
+    CONCAT(
+        CAST(day_of_month(cohort_observations.cohort_week) AS varchar),
+        CASE
+            WHEN day_of_month(cohort_observations.cohort_week) IN (11, 12, 13) THEN 'th'
+            WHEN mod(day_of_month(cohort_observations.cohort_week), 10) = 1 THEN 'st'
+            WHEN mod(day_of_month(cohort_observations.cohort_week), 10) = 2 THEN 'nd'
+            WHEN mod(day_of_month(cohort_observations.cohort_week), 10) = 3 THEN 'rd'
+            ELSE 'th'
+        END,
+        ' ',
+        date_format(cohort_observations.cohort_week, '%b')
+    ) AS cohort_label,
     cohort_observations.observation_week,
     date_diff('week', cohort_observations.cohort_week, cohort_observations.observation_week) AS weeks_since_cohort,
     cohort_sizes.cohort_users,
-    COUNT_IF(cohort_observations.current_balance_usd >= 100) AS retained_users,
-    COUNT_IF(cohort_observations.current_balance_usd >= 100) * 1.0 / cohort_sizes.cohort_users AS retained_user_share
+    COUNT_IF(cohort_observations.current_balance_usd >= params.min_balance_usd) AS retained_users,
+    COUNT_IF(cohort_observations.current_balance_usd >= params.min_balance_usd) * 1.0 / cohort_sizes.cohort_users AS retained_user_share,
+    COUNT_IF(cohort_observations.current_balance_usd >= params.min_balance_usd) * 100.0 / cohort_sizes.cohort_users AS retained_user_pct
 FROM cohort_observations
 INNER JOIN cohort_sizes
     ON cohort_observations.cohort_week = cohort_sizes.cohort_week
+CROSS JOIN params
 GROUP BY
     cohort_observations.cohort_week,
     cohort_observations.observation_week,
