@@ -30,6 +30,9 @@ category_definitions AS (
         category_order,
         asset_category
     FROM asset_categories
+    UNION ALL
+    SELECT MAX(category_order) + 1 AS category_order, 'Other' AS asset_category
+    FROM asset_categories
 ),
 classified_balances AS (
     SELECT
@@ -38,14 +41,7 @@ classified_balances AS (
             ELSE 'No V3 history'
         END AS user_origin,
         COALESCE(asset_categories.asset_category, 'Other') AS asset_category,
-        COALESCE(
-            asset_categories.category_order,
-            (
-                SELECT category_definitions.category_order
-                FROM category_definitions
-                WHERE category_definitions.asset_category = 'Other'
-            )
-        ) AS category_order,
+        COALESCE(asset_categories.category_order, (SELECT MAX(category_order) + 1 FROM asset_categories)) AS category_order,
         v4_current_balances.user,
         v4_current_balances.current_position_usd
     FROM v4_current_balances

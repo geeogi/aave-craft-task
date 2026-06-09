@@ -25,18 +25,14 @@ category_definitions AS (
         category_order,
         asset_category
     FROM asset_categories
+    UNION ALL
+    SELECT MAX(category_order) + 1 AS category_order, 'Other' AS asset_category
+    FROM asset_categories
 ),
 classified_balances AS (
     SELECT
         COALESCE(asset_categories.asset_category, 'Other') AS asset_category,
-        COALESCE(
-            asset_categories.category_order,
-            (
-                SELECT category_definitions.category_order
-                FROM category_definitions
-                WHERE category_definitions.asset_category = 'Other'
-            )
-        ) AS category_order,
+        COALESCE(asset_categories.category_order, (SELECT MAX(category_order) + 1 FROM asset_categories)) AS category_order,
         v3_current_balances.user,
         v3_current_balances.current_balance_usd
     FROM v3_current_balances

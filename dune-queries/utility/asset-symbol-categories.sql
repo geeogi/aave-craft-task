@@ -14,8 +14,6 @@ WITH category_ordering AS (
     SELECT 'BTC', 5
     UNION ALL
     SELECT 'LST', 6
-    UNION ALL
-    SELECT 'Other', 7
 ),
 symbol_categories AS (
     SELECT 'ETH' AS symbol, 'ETH' AS asset_category
@@ -109,13 +107,6 @@ symbol_categories AS (
     SELECT 'uniETH', 'LST'
     UNION ALL
     SELECT 'STONE', 'LST'
-
-    UNION ALL
-    SELECT 'XAUt', 'Other'
-    UNION ALL
-    SELECT 'LINK', 'Other'
-    UNION ALL
-    SELECT 'AAVE', 'Other'
 )
 
 SELECT
