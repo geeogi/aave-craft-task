@@ -70,3 +70,6 @@ source of acquisition, but so is new addresses (address rotation).
 We stratify by portfolio bucket size because users have similar risk
 preferences determined by portfolio size. Understanding the behaviour of a few
 $10m portfolio owners tells us something about most $10m portfolio owners.
+
+The philosophy is to focus on recent data and focus on current V3 and V4 users
+where possible. Historical data is generally less useful.
