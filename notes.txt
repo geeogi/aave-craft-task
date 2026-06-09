@@ -32,10 +32,8 @@ users do not hold balances through time, they use Aave when they need it.
 Users split activity across wallets so a simple MAU chart may be more
 reflective.
 
-# V3 User Balances
 
-V3 is not scaling balances correctly. It shows the aToken amounts at time of
-transfer and does not account interest that has accrued since transfer.
+# V3 User Balances
 
 Positions in V3 can be transferred between addresses by way of an
 aToken/vToken transfer. This means that supply/withdraw/borrow/repay events do
@@ -43,7 +41,7 @@ not tell the whole story of balances.
 
 Computing the current balances of all V3 users requires the full list of
 aToken addresses. For simplicity I have worked with a focussed list of the top
-reserves.
+reserves covering 92% of V3 supplied assets today.
 
 To get better precision around V3 balances we use the liquidityIndex weekly to
 scale by interest accrued.
