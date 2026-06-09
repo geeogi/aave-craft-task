@@ -1,6 +1,4 @@
 -- Weekly V4 supplied balance split by whether the user has any V3 balance history.
--- Uses query_7682230 for V4 weekly balances.
--- Uses dune.geeogi.result_aave_v3_ethereum_user_balances_weekly for V3 historical user presence.
 
 WITH v3_historical_users AS (
     SELECT DISTINCT

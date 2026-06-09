@@ -68,3 +68,7 @@ base.
 
 V4 total supplied by user origin shows us that V3 users are a significant
 source of acquisition, but so is new addresses (address rotation).
+
+We stratify by portfolio bucket size because users have similar risk
+preferences determined by portfolio size. Understanding the behaviour of a few
+$10m portfolio owners tells us something about most $10m portfolio owners.
