@@ -38,8 +38,8 @@ WITH selected_assets AS (
 
     SELECT
         'rsETH' AS asset,
-        0xA1290d69cA485bC62b5EA2c7cC9C42A25aC6A3A3 AS reserve,
-        0x8Eb270e296023E9D92081fdF967dDd7878724424 AS a_token,
+        0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7 AS reserve,
+        0x2D62109243b87C4bA3EE7bA1D91B0dD0A074d7b1 AS a_token,
         18 AS decimals
 
     UNION ALL
@@ -71,7 +71,7 @@ WITH selected_assets AS (
     SELECT
         'USDe' AS asset,
         0x4c9EDD5852cd905f086C759E8383e09bff1E68B3 AS reserve,
-        0x41393e5e337606dc3821075Af65AeE84D7688CBD AS a_token,
+        0x4F5923Fc5FD4a93352581b38B7cD26943012DECF AS a_token,
         18 AS decimals
 
     UNION ALL
@@ -79,7 +79,7 @@ WITH selected_assets AS (
     SELECT
         'sUSDe' AS asset,
         0x9D39A5DE30e57443Bff2A8307A4256C8797A3497 AS reserve,
-        0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34 AS a_token,
+        0x4579a27aF00A62C0EB156349f31B345c08386419 AS a_token,
         18 AS decimals
 ),
 weekly_reserve_updates AS (
