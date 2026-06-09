@@ -9,7 +9,7 @@ WITH weekly_asset_reference AS (
         decimals,
         week,
         liquidityIndex
-    FROM query_7678464
+    FROM dune.geeogi.result_aave_v3_ethereum_asset_reference_weekly
 ),
 user_scaled_transfers AS (
     SELECT

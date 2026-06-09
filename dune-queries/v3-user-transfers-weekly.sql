@@ -1,5 +1,6 @@
 -- Weekly net aToken transfer deltas for selected Aave V3 Ethereum assets.
 -- https://dune.com/queries/7678569
+-- dune.geeogi.result_aave_v3_ethereum_user_transfers_weekly
 
 WITH weekly_asset_reference AS (
     SELECT
@@ -7,7 +8,7 @@ WITH weekly_asset_reference AS (
         reserve,
         a_token,
         decimals
-    FROM query_7678464
+    FROM dune.geeogi.result_aave_v3_ethereum_asset_reference_weekly
 ),
 selected_atokens AS (
     SELECT DISTINCT

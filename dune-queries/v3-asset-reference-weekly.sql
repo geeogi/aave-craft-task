@@ -82,6 +82,39 @@ weekly_liquidity_index AS (
         liquidityIndex
     FROM weekly_reserve_updates
     WHERE update_rank = 1
+),
+asset_week_ranges AS (
+    SELECT
+        reserve,
+        MIN(week) AS first_week
+    FROM weekly_liquidity_index
+    GROUP BY reserve
+),
+reserve_weeks AS (
+    SELECT
+        asset_week_ranges.reserve,
+        CAST(week AS timestamp) AS week
+    FROM asset_week_ranges
+    CROSS JOIN UNNEST(
+        sequence(
+            CAST(asset_week_ranges.first_week AS date),
+            CAST(date_trunc('week', current_timestamp) AS date),
+            INTERVAL '7' day
+        )
+    ) AS weeks(week)
+),
+carried_liquidity_index AS (
+    SELECT
+        reserve_weeks.reserve,
+        reserve_weeks.week,
+        MAX_BY(weekly_liquidity_index.liquidityIndex, weekly_liquidity_index.week) AS liquidityIndex
+    FROM reserve_weeks
+    LEFT JOIN weekly_liquidity_index
+        ON reserve_weeks.reserve = weekly_liquidity_index.reserve
+       AND weekly_liquidity_index.week <= reserve_weeks.week
+    GROUP BY
+        reserve_weeks.reserve,
+        reserve_weeks.week
 )
 
 SELECT
@@ -89,11 +122,11 @@ SELECT
     selected_assets.reserve,
     selected_assets.a_token,
     selected_assets.decimals,
-    weekly_liquidity_index.week,
-    weekly_liquidity_index.liquidityIndex
-FROM weekly_liquidity_index
+    carried_liquidity_index.week,
+    carried_liquidity_index.liquidityIndex
+FROM carried_liquidity_index
 INNER JOIN selected_assets
-    ON weekly_liquidity_index.reserve = selected_assets.reserve
+    ON carried_liquidity_index.reserve = selected_assets.reserve
 ORDER BY
-    weekly_liquidity_index.week DESC,
+    carried_liquidity_index.week DESC,
     selected_assets.asset
