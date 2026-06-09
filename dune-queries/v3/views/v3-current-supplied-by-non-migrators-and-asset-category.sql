@@ -1,5 +1,7 @@
 -- Current V3 supplied balance for users with V3 balance > $100 on the V4 start week
 -- who never used V4, split by asset category.
+-- https://dune.com/queries/7685075
+-- https://dune.com/queries/7685075/11642074
 
 WITH params AS (
     SELECT

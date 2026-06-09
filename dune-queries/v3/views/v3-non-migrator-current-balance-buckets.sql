@@ -1,5 +1,6 @@
 -- Users with V3 balance > $100 on the V4 start week who never used V4.
 -- Buckets non-migrators by their current V3 balances and shows current V3 totals by bucket.
+-- https://dune.com/queries/7684185
 
 WITH params AS (
     SELECT
