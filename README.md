@@ -22,7 +22,7 @@ The term "user" is often used where specifically this means an Ethereum address.
 
 ## Tradeoffs or unfinished work
 
-Our V3 balance histories reflect only a limited number of assets i.e. not every V3 supplied asset is tracked. I chose the top assets which reflect 92%+ of the current V3 balance sheet. This tradeoff was made to improve query speed and increase confidence in the base dataset.
+The V3 balance histories reflect only a limited number of assets i.e. not every V3 supplied asset is tracked. I chose the top assets which reflect 92%+ of the current V3 balance sheet. This tradeoff was made to improve query speed and increase confidence in the base dataset.
 
 ## What you would improve next with more time
 
