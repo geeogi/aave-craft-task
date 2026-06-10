@@ -4,7 +4,7 @@ The dashboard is located here: https://dune.com/geeogi_team/aave-v3-to-v4
 
 Much of the thought process and detail is written into the dashboard and is not duplicated here.
 
-# Approach and how you structured the analysis
+## Approach and how you structured the analysis
 
 I chose to focus on Aave V3 Ethereum (as opposed to other V3 markets) in order to narrow the scope of this task. Also, the V3 Ethereum market is probably the most relevant for understanding the growth of V4, given that it is the largest and most successful DeFi lending market, on the same chain as V4 and with a similar brand positioning.
 
@@ -16,15 +16,15 @@ To generate confidence in the base dataset the following sanity checks were made
 
 In general I tried to generate confident insights which confirm primary statements about V3 and V4. The dashboard confirms basic observations and serves as a springboard into follow-up analysis.
 
-# Assumptions made
+## Assumptions made
 
 The term "user" is often used where specifically this means an Ethereum address. Retention metrics focus on users with a balance above $100 - this is likely the minimum amount for which the protocol could be useful but it includes many dust users.
 
-# Tradeoffs or unfinished work
+## Tradeoffs or unfinished work
 
 Our V3 balance histories reflect only a limited number of assets i.e. not every V3 supplied asset is tracked. I chose the top assets which reflect 92%+ of the current V3 balance sheet. This tradeoff was made to improve query speed and increase confidence in the base dataset.
 
-# What you would improve next with more time
+## What you would improve next with more time
 
 - Increase confidence in the base dataset with more sanity checking e.g. RPC lookup.
 
