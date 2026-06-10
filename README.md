@@ -34,4 +34,4 @@ Our V3 balance histories reflect only a limited number of assets i.e. not every 
 
 - Experiment with longer running retention views to understand if this metric can be more useful. Experiment with retention metrics using a higher balance threshold than $100.
 
-- Idea that I didn't get a chance to try: identify and aggregate the collateral-debt mix of V4 users to identify which strategies are growing. For example, SUPPLY-wstETH-BORROW-ETH and SUPPLY-USDG are two strategies on V4. By identifying the growing stragegies we could understand which user profiles are growing on V4 and also compare the profitability of these strategies to V3.
+- Idea that I didn't get a chance to try: identify and aggregate the collateral-debt mix of V4 users to identify which strategies are growing. For example, SUPPLY-wstETH-BORROW-ETH and SUPPLY-USDG are two strategies on V4. By identifying the growing strategies we could understand which user profiles are growing on V4 and also compare the profitability of these strategies to V3.
