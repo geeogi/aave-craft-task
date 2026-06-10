@@ -1,4 +1,5 @@
 -- Weekly Aave V4 asset reference across all Ethereum spokes.
+-- This is our source for asset IDs and their weekly shares:amount ratio, pricing.
 -- https://dune.com/queries/7676557
 -- dune.geeogi_team.result_aave_v4_ethereum_asset_reference_weekly
 

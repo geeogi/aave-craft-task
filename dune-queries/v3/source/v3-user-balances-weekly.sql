@@ -1,4 +1,5 @@
--- Weekly end-of-week user balances for selected Aave V3 Ethereum assets.
+-- Weekly end-of-week user balances for selected Aave V3 Ethereum supplied assets.
+-- We take our aToken transfers, scale them by our shares:amount ratio, and price them.
 -- https://dune.com/queries/7678703
 -- dune.geeogi_team.result_aave_v3_ethereum_user_balances_weekly
 

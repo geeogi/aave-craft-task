@@ -1,4 +1,5 @@
 -- Weekly end-of-week user balances across all Aave V4 Ethereum spokes.
+-- We take our transfers and asset references to net a USD balance per-user per-week.
 -- https://dune.com/queries/7682230
 -- dune.geeogi_team.result_aave_v4_ethereum_user_balances_weekly
 

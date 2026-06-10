@@ -1,4 +1,5 @@
 -- Weekly net supplied share deltas across all Aave V4 Ethereum spokes.
+-- We use Supply, Withdraw and Liquidation to track supply share transfers.
 -- https://dune.com/queries/7682214
 
 WITH user_shares AS (

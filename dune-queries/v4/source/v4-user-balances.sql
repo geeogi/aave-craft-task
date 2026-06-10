@@ -1,4 +1,5 @@
--- User balances in USD across all V4 spokes.
+-- User balances across all Aave V4 Ethereum spokes.
+-- Takes our latest balances for each user.
 -- https://dune.com/queries/7676585
 
 WITH weekly_balances AS (

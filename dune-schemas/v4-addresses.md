@@ -27,7 +27,7 @@ spokes:
 | LombardBTCSpoke | 0x7EC68b5695e803e98a21a9A05d744F28b0a7753D |
 | TreasurySpoke | 0xB9B0b8fA64b5F8B1720A1791647Aa5ea39053155 |
 
-TreasurySpoke appears unused and unavailable in Dune.
+TreasurySpoke appears unused and unavailable in Dune. These are all V4 hubs and spokes.
 
 notes:
 - `name` uses the Dune Analytics naming under `aave_v4`.

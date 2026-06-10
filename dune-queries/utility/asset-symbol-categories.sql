@@ -1,5 +1,5 @@
--- Shared symbol -> category mapping for Aave asset exposure analysis.
--- Downstream queries should LEFT JOIN on symbol and default unmatched symbols to 'Other'.
+-- Handwritten categorisation of symbols and their asset type
+-- Used to aggregate and characterise the activity of Aave users
 -- https://dune.com/queries/7684965
 
 WITH category_ordering AS (

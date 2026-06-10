@@ -1,5 +1,5 @@
--- Current user balances for selected Aave V3 Ethereum aTokens.
--- Approximates scaled balances using weekly liquidityIndex snapshots.
+-- User balances for selected Aave V3 Ethereum supplied assets.
+-- Takes our latest balances for each user.
 -- https://dune.com/queries/7677461
 
 WITH weekly_balances AS (
