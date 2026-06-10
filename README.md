@@ -30,7 +30,7 @@ Our V3 balance histories reflect only a limited number of assets i.e. not every 
 
 - Improve the structure of this repo using the Dune Analytics API to update queries programmatically.
 
-- Consider live views which update on a schedule.
+- Consider live views on the dashboard which update on a schedule (current views are static).
 
 - Experiment with longer running retention views to understand if this metric can be more useful. Experiment with retention metrics using a higher balance threshold than $100.
 
