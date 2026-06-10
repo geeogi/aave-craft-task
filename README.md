@@ -2,7 +2,7 @@
 
 The dashboard is located here: https://dune.com/geeogi_team/aave-v3-to-v4
 
-Much of the thought processes and definitions are written into the dashboard and are not duplicated here.
+Much of the thought process and detail is written into the dashboard and is not duplicated here.
 
 # Approach and how you structured the analysis
 
