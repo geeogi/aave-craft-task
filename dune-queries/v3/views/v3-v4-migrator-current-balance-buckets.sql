@@ -90,6 +90,7 @@ classified AS (
             ELSE 7
         END AS bucket_order
     FROM migrators
+    WHERE current_total_balance_usd >= 1
 ),
 bucket_aggregates AS (
     SELECT

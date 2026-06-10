@@ -49,16 +49,30 @@ cohort_sizes AS (
     FROM selected_cohorts
     GROUP BY cohort_week
 ),
-cohort_observations AS (
+observation_weeks AS (
+    SELECT DISTINCT
+        week
+    FROM weekly_balances
+),
+cohort_user_weeks AS (
     SELECT
         selected_cohorts.cohort_week,
-        weekly_balances.week AS observation_week,
         selected_cohorts.user,
-        weekly_balances.current_balance_usd
+        observation_weeks.week AS observation_week
     FROM selected_cohorts
-    INNER JOIN weekly_balances
-        ON selected_cohorts.user = weekly_balances.user
-       AND weekly_balances.week >= selected_cohorts.cohort_week
+    INNER JOIN observation_weeks
+        ON observation_weeks.week >= selected_cohorts.cohort_week
+),
+cohort_observations AS (
+    SELECT
+        cohort_user_weeks.cohort_week,
+        cohort_user_weeks.observation_week,
+        cohort_user_weeks.user,
+        weekly_balances.current_balance_usd
+    FROM cohort_user_weeks
+    LEFT JOIN weekly_balances
+        ON cohort_user_weeks.user = weekly_balances.user
+       AND cohort_user_weeks.observation_week = weekly_balances.week
 )
 
 SELECT

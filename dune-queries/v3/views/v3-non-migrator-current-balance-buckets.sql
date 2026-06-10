@@ -78,6 +78,7 @@ classified AS (
             ELSE 7
         END AS bucket_order
     FROM non_migrators
+    WHERE current_v3_balance_usd >= 1
 ),
 bucket_aggregates AS (
     SELECT
