@@ -1,4 +1,4 @@
-# Aave Take Home Test - Aave V3 & V4 User Analytics Dashboard
+# Aave V3 & V4 User Analytics Dashboard
 
 The dashboard is located here: https://dune.com/geeogi_team/aave-v3-to-v4
 
