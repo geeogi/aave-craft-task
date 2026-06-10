@@ -26,7 +26,7 @@ Our V3 balance histories reflect only a limited number of assets i.e. not every 
 
 Increase confidence in the base dataset with more sanity checking e.g. RPC lookup.
 
-Improve structure of this repo using the Dune Analytics API to update queries programmatically.
+Improve the structure of this repo using the Dune Analytics API to update queries programmatically.
 
 Experiment with longer running retention views to understand if this metric can be more useful. Experiment with retention metrics using a higher balance threshold than $100.
 
