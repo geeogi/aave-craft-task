@@ -1,8 +1,7 @@
 -- Weekly constant-price dollar retention for selected Aave V3 Ethereum assets.
 -- Cohort entry is the first week a user has total balance >= 100 USD.
--- Later balances are valued using each cohort asset's cohort-week price.
--- Gross retention allows asset balances to grow above cohort units.
--- Capped retention limits each asset to its cohort-week units.
+-- Later balances are valued using each held asset's cohort-week price.
+-- This counts capital retained on Aave even if users rotate between assets.
 -- https://dune.com/queries/7682869
 -- https://dune.com/queries/7682869/11639552
 
@@ -57,61 +56,60 @@ cohort_sizes AS (
     FROM analysis_cohorts
     GROUP BY cohort_week
 ),
--- Freeze each cohort's starting asset amounts and prices at entry week.
-cohort_entry_positions AS (
+cohort_start_values AS (
     SELECT
         analysis_cohorts.cohort_week,
-        analysis_cohorts.user,
-        weekly_positions.asset,
-        weekly_positions.reserve,
-        weekly_positions.a_token,
-        weekly_positions.current_a_token_balance AS cohort_amount,
-        weekly_positions.asset_price_usd AS cohort_price_usd,
-        weekly_positions.current_balance_usd AS cohort_position_usd
+        SUM(weekly_positions.current_balance_usd) AS cohort_start_balance_usd
     FROM analysis_cohorts
     INNER JOIN weekly_positions
         ON analysis_cohorts.user = weekly_positions.user
        AND analysis_cohorts.cohort_week = weekly_positions.week
-),
-cohort_start_values AS (
-    SELECT
-        cohort_week,
-        SUM(cohort_position_usd) AS cohort_start_balance_usd
-    FROM cohort_entry_positions
-    GROUP BY cohort_week
+    GROUP BY analysis_cohorts.cohort_week
 ),
 observation_weeks AS (
     SELECT DISTINCT
         week
     FROM weekly_positions
 ),
--- Follow only the cohort-entry positions through later weeks at frozen entry prices.
+cohort_week_asset_prices AS (
+    SELECT DISTINCT
+        week,
+        reserve,
+        a_token,
+        asset_price_usd AS cohort_price_usd
+    FROM weekly_positions
+),
+cohort_user_weeks AS (
+    SELECT
+        analysis_cohorts.cohort_week,
+        observation_weeks.week AS observation_week,
+        analysis_cohorts.user
+    FROM analysis_cohorts
+    INNER JOIN observation_weeks
+        ON observation_weeks.week >= analysis_cohorts.cohort_week
+),
+-- Reprice each later-held asset using its price in the user's cohort week.
 cohort_position_values_by_week AS (
     SELECT
-        cohort_entry_positions.cohort_week,
-        observation_weeks.week AS observation_week,
-        cohort_entry_positions.user,
-        cohort_entry_positions.asset,
-        cohort_entry_positions.reserve,
-        cohort_entry_positions.a_token,
-        cohort_entry_positions.cohort_amount,
-        cohort_entry_positions.cohort_price_usd,
-        COALESCE(weekly_positions.current_a_token_balance, 0) AS observation_amount
-    FROM cohort_entry_positions
-    INNER JOIN observation_weeks
-        ON observation_weeks.week >= cohort_entry_positions.cohort_week
+        cohort_user_weeks.cohort_week,
+        cohort_user_weeks.observation_week,
+        cohort_user_weeks.user,
+        COALESCE(weekly_positions.current_a_token_balance, 0) AS observation_amount,
+        COALESCE(cohort_week_asset_prices.cohort_price_usd, 0) AS cohort_price_usd
+    FROM cohort_user_weeks
     LEFT JOIN weekly_positions
-        ON cohort_entry_positions.user = weekly_positions.user
-       AND cohort_entry_positions.reserve = weekly_positions.reserve
-       AND cohort_entry_positions.a_token = weekly_positions.a_token
-       AND observation_weeks.week = weekly_positions.week
+        ON cohort_user_weeks.user = weekly_positions.user
+       AND cohort_user_weeks.observation_week = weekly_positions.week
+    LEFT JOIN cohort_week_asset_prices
+        ON cohort_user_weeks.cohort_week = cohort_week_asset_prices.week
+       AND weekly_positions.reserve = cohort_week_asset_prices.reserve
+       AND weekly_positions.a_token = cohort_week_asset_prices.a_token
 ),
 retention_values_by_week AS (
     SELECT
         cohort_week,
         observation_week,
-        SUM(observation_amount * cohort_price_usd) AS gross_retained_balance_usd,
-        SUM(LEAST(observation_amount, cohort_amount) * cohort_price_usd) AS capped_retained_balance_usd
+        SUM(observation_amount * cohort_price_usd) AS retained_balance_usd
     FROM cohort_position_values_by_week
     GROUP BY
         cohort_week,
@@ -137,10 +135,8 @@ SELECT
     date_diff('week', retention_values_by_week.cohort_week, retention_values_by_week.observation_week) AS weeks_since_cohort,
     cohort_sizes.cohort_users,
     cohort_start_values.cohort_start_balance_usd,
-    retention_values_by_week.gross_retained_balance_usd,
-    retention_values_by_week.gross_retained_balance_usd * 100.0 / cohort_start_values.cohort_start_balance_usd AS gross_retained_balance_pct,
-    retention_values_by_week.capped_retained_balance_usd,
-    retention_values_by_week.capped_retained_balance_usd * 100.0 / cohort_start_values.cohort_start_balance_usd AS capped_retained_balance_pct
+    retention_values_by_week.retained_balance_usd,
+    retention_values_by_week.retained_balance_usd * 100.0 / cohort_start_values.cohort_start_balance_usd AS retained_balance_pct
 FROM retention_values_by_week
 INNER JOIN cohort_sizes
     ON retention_values_by_week.cohort_week = cohort_sizes.cohort_week
