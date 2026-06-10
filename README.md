@@ -30,4 +30,4 @@ Improve structure of this repo using the Dune Analytics API to update queries pr
 
 Experiment with longer running retention views to understand if this metric can be more useful. Experiment with retention metrics using a higher balance threshold than $100.
 
-I think it could be interesting to identify and aggregate the collateral-debt mix of V4 users to identify which strategies are growing. For example, SUPPLY-wstETH-BORROW-ETH and SUPPLY-USDG are two strategies on V4. By identifying thw growing stragegies we could understand which user profiles are growing on V4 and also compare the profitability of these strategies to V3.
+Future idea: identify and aggregate the collateral-debt mix of V4 users to identify which strategies are growing. For example, SUPPLY-wstETH-BORROW-ETH and SUPPLY-USDG are two strategies on V4. By identifying the growing stragegies we could understand which user profiles are growing on V4 and also compare the profitability of these strategies to V3.
