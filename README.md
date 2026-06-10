@@ -14,6 +14,8 @@ The source queries aim to standardise the balance of supplied assets per-user pe
 
 To generate confidence in the base dataset the following sanity checks were made: Compare total V3/V4 supplied balances against app.aave.com and pro.aave.com, compare individual V3 aToken balances against Etherscan, compare individual V4 balances against aave.tokenlogic.xyz, compare the V4 total supplied balance through time on pro.aave.com.
 
+In general I tried to generate confident insights which confirm primary statements about V3 and V4. The dashboard confirms basic observations and serves as a springboard into follow-up analysis.
+
 # Assumptions made
 
 The term "user" is often used where specifically this means an Ethereum address. Retention metrics focus on users with a balance above $100 - this is likely the minimum amount for which the protocol could be useful but it includes many dust users.
@@ -24,10 +26,12 @@ Our V3 balance histories reflect only a limited number of assets i.e. not every 
 
 # What you would improve next with more time
 
-Increase confidence in the base dataset with more sanity checking e.g. RPC lookup.
+- Increase confidence in the base dataset with more sanity checking e.g. RPC lookup.
 
-Improve the structure of this repo using the Dune Analytics API to update queries programmatically.
+- Improve the structure of this repo using the Dune Analytics API to update queries programmatically.
 
-Experiment with longer running retention views to understand if this metric can be more useful. Experiment with retention metrics using a higher balance threshold than $100.
+- Consider live views which update on a schedule.
 
-Idea that I didn't get a chance to try: identify and aggregate the collateral-debt mix of V4 users to identify which strategies are growing. For example, SUPPLY-wstETH-BORROW-ETH and SUPPLY-USDG are two strategies on V4. By identifying the growing stragegies we could understand which user profiles are growing on V4 and also compare the profitability of these strategies to V3.
+- Experiment with longer running retention views to understand if this metric can be more useful. Experiment with retention metrics using a higher balance threshold than $100.
+
+- Idea that I didn't get a chance to try: identify and aggregate the collateral-debt mix of V4 users to identify which strategies are growing. For example, SUPPLY-wstETH-BORROW-ETH and SUPPLY-USDG are two strategies on V4. By identifying the growing stragegies we could understand which user profiles are growing on V4 and also compare the profitability of these strategies to V3.
